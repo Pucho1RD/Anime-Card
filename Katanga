@@ -1,0 +1,130 @@
+-- Carga la librería de UI de Orion
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+
+-- Crea una ventana de UI
+local Window = OrionLib:MakeWindow({
+    Name = "Katanga Hub | Anime Cards Battle |",
+    IntroText = "Katanga Hub",
+    SaveConfig = true,
+    ConfigFolder = "Test"
+})
+
+-- Obtener servicios necesarios
+local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
+
+local VirtualUser = game:GetService("VirtualUser")
+
+-- Conectar evento para prevenir AFK
+game:GetService("Players").LocalPlayer.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+-- Variables globales para controlar el estado
+_G.luckPotionTPEnabled = false
+_G.removeRollCDEnabled = false
+_G.quickRollsEnabled = false
+_G.collectObbySwordEnabled = false
+_G.tpToPotionsEnabled = false
+
+local function teleportToObbySword()
+    local obbySwordModel = Workspace:FindFirstChild("ObbySword")
+    
+    if obbySwordModel and obbySwordModel:IsA("Model") then
+        local primaryPart = obbySwordModel.PrimaryPart or obbySwordModel:FindFirstChildWhichIsA("Model")
+        
+        if primaryPart then
+            local player = Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            humanoidRootPart.CFrame = primaryPart.CFrame -- Teletransporta al centro del modelo
+            print("Teletransportado al modelo ObbySword")
+        else
+            print("No se encontró una parte primaria en el modelo ObbySword")
+        end
+    else
+        print("Modelo ObbySword no encontrado")
+    end
+end
+
+-- Hilo para recoger la espada ObbySword automáticamente
+local function autoCollectObbySword()
+    while _G.collectObbySwordEnabled do
+        teleportToObbySword()
+        wait(5) -- Espera 5 segundos antes de intentar recoger de nuevo
+    end
+end
+
+-- Función para teletransportarse a todas las pociones disponibles
+local function teleportToAllPotions()
+    local activePotionsFolder = Workspace:FindFirstChild("ActivePotions")
+
+    if activePotionsFolder then
+        for _, potionModel in ipairs(activePotionsFolder:GetChildren()) do
+            if potionModel:IsA("Model") then
+                local basePart = potionModel:FindFirstChild("Base")
+                
+                if basePart and basePart:IsA("Part") then
+                    local player = Players.LocalPlayer
+                    local character = player.Character or player.CharacterAdded:Wait()
+                    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                    humanoidRootPart.CFrame = basePart.CFrame
+                    print("Teletransportado a " .. potionModel.Name .. "'s Base Part")
+                    wait(2) -- Añade un retraso para evitar teletransportes rápidos
+                end
+            end
+        end
+    else
+        print("Carpeta ActivePotions no encontrada")
+    end
+end
+
+-- Hilo para teletransportarse a las pociones repetidamente
+local function autoTeleportToPotions()
+    while _G.tpToPotionsEnabled do
+        teleportToAllPotions()
+        wait(10) -- Espera 10 segundos antes de teletransportarse nuevamente
+    end
+end
+
+-- Crea una pestaña para las funciones de teletransporte
+local FarmTab = Window:MakeTab({
+    Name = "Farm",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Toggle para teletransportarse a todas las pociones
+FarmTab:AddToggle({
+    Name = "Auto TP to All Potions",
+    Default = false,
+    Callback = function(state)
+        _G.tpToPotionsEnabled = state
+        if state then
+            coroutine.wrap(autoTeleportToPotions)()
+        end
+    end
+})
+
+-- Botón para teletransportarse al modelo ObbySword
+FarmTab:AddToggle({
+    Name = "TP to ObbySword",
+    Callback = function()
+        teleportToObbySword()
+    end
+})
+
+-- Toggle para recoger automáticamente la espada ObbySword
+FarmTab:AddToggle({
+    Name = "Auto Collect ObbySword",
+    Default = false,
+    Callback = function(state)
+        _G.collectObbySwordEnabled = state
+        if state then
+            coroutine.wrap(autoCollectObbySword)()
+        end
+    end
+})
+
+OrionLib:Init()
