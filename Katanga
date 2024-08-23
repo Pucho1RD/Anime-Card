@@ -213,15 +213,15 @@ local function checkAndSelectTraining()
             -- Si no hay un entrenamiento seleccionado, selecciona "weapon"
             local args = {
                 [1] = "115a101b108c101d99e116f194g177h100i56j97k100l52m50n53o",
-                [2] = "weapon"
+                [2] = "strength"
             }
             
             game:GetService("ReplicatedStorage").Remotes:FindFirstChild("116a114b97c105d110e105f110g103h83i116j97k116l115m194n177o100p56q97r100s52t50u53v"):FireServer(unpack(args))            
-        elseif selectedTrainingStat == "energy" or selectedTrainingStat == "strength" then
+        elseif selectedTrainingStat == "energy" or selectedTrainingStat == "weapon" then
             -- Si el entrenamiento seleccionado es "strength" o "energy", cámbialo a "weapon"
             local args = {
                 [1] = "115a101b108c101d99e116f194g177h100i56j97k100l52m50n53o",
-                [2] = "weapon"
+                [2] = "strength"
             }
             
             game:GetService("ReplicatedStorage").Remotes:FindFirstChild("116a114b97c105d110e105f110g103h83i116j97k116l115m194n177o100p56q97r100s52t50u53v"):FireServer(unpack(args))
@@ -261,7 +261,7 @@ local function checkAndActivateBuff()
             -- Si no hay buff activo, ejecuta el código para activar el buff
             local args = {
                 [1] = "99a104b97c114d103e101f194g177h100i56j97k100l52m50n53o",
-                [2] = "gearFour",
+                [2] = "susanooArmor",
                 [3] = CFrame.new(Vector3.new(-2194.1728515625, -420.18634033203125, 19603.197265625), Vector3.new(-0, -0, -1)),
                 [4] = CFrame.new(Vector3.new(-2187.389892578125, -419.7529296875, 19601.9765625), Vector3.new(-0.37717315554618835, 0.33692970871925354, 0.8626810908317566))
             }
